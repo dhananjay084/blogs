@@ -1,23 +1,32 @@
 import { useState } from "react";
 import { useRouter } from "next/router";
-import { useAuth } from "../context/AuthContext"; // Import the AuthContext
+import { useAuth } from "../context/AuthContext"; 
+import { ToastContainer, toast } from "react-toastify"; 
+import "react-toastify/dist/ReactToastify.css"; 
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false); 
   const router = useRouter();
-  const { login } = useAuth(); // Use the login function from AuthContext
+  const { login } = useAuth(); 
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true); 
 
     try {
-      const success = await login(email, password); // Call the login function
+      const success = await login(email, password); 
       if (success) {
-        router.push("/blogs"); // Redirect to the blogs page
+        toast.success("Login successful!"); 
+        setTimeout(() => {
+          router.push("/blogs"); 
+        }, 2000); 
       }
     } catch (error) {
-      alert(error.message || "Login failed");
+      toast.error(error.message || "Login failed"); 
+    } finally {
+      setLoading(false); 
     }
   };
 
@@ -49,9 +58,10 @@ export default function Login() {
           />
           <button
             type="submit"
-            className="w-full bg-blue-500 text-white p-3 rounded-lg font-semibold hover:bg-blue-600 transition-all duration-300 ease-in-out transform hover:scale-105"
+            disabled={loading} // Disable the button when loading
+            className="w-full bg-blue-500 text-white p-3 rounded-lg font-semibold hover:bg-blue-600 transition-all duration-300 ease-in-out transform hover:scale-105 disabled:opacity-75 disabled:cursor-not-allowed"
           >
-            Login
+            {loading ? "Logging in..." : "Login"} {/* Show loading text */}
           </button>
         </div>
         <p className="text-center text-sm text-gray-600 mt-4">
@@ -61,6 +71,18 @@ export default function Login() {
           </a>
         </p>
       </form>
+
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
     </div>
   );
 }

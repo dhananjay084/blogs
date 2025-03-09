@@ -1,14 +1,18 @@
 import { useState } from "react";
 import { useRouter } from "next/router";
+import { ToastContainer, toast } from "react-toastify"; // Import React Toastify
+import "react-toastify/dist/ReactToastify.css"; // Import React Toastify CSS
 
 export default function Signup() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false); // Add loading state
   const router = useRouter();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true); // Set loading to true
 
     try {
       const res = await fetch("/api/auth/signup", {
@@ -22,13 +26,18 @@ export default function Signup() {
       const data = await res.json();
 
       if (res.ok) {
-        router.push("/login");
+        toast.success("Signup successful! Redirecting to login..."); // Show success toast
+        setTimeout(() => {
+          router.push("/login"); // Redirect to the login page after 2 seconds
+        }, 2000);
       } else {
-        alert(data.message || "Signup failed");
+        toast.error(data.message || "Signup failed"); // Show error toast
       }
     } catch (error) {
       console.error("Signup error:", error);
-      alert("Signup failed");
+      toast.error("Signup failed"); // Show error toast
+    } finally {
+      setLoading(false); // Reset loading state
     }
   };
 
@@ -68,9 +77,10 @@ export default function Signup() {
           />
           <button
             type="submit"
-            className="w-full bg-blue-500 text-white p-3 rounded-lg font-semibold hover:bg-blue-600 transition-all duration-300 ease-in-out transform hover:scale-105"
+            disabled={loading} // Disable the button when loading
+            className="w-full bg-blue-500 text-white p-3 rounded-lg font-semibold hover:bg-blue-600 transition-all duration-300 ease-in-out transform hover:scale-105 disabled:opacity-75 disabled:cursor-not-allowed"
           >
-            Sign Up
+            {loading ? "Creating user..." : "Sign Up"} {/* Show loading text */}
           </button>
         </div>
         <p className="text-center text-sm text-gray-600 mt-4">
@@ -80,6 +90,19 @@ export default function Signup() {
           </a>
         </p>
       </form>
+
+      {/* React Toastify Container */}
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
     </div>
   );
 }
