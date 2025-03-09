@@ -27,9 +27,9 @@ export default function Signup() {
 
       if (res.ok) {
         toast.success("Signup successful! Redirecting to login..."); // Show success toast
-        setTimeout(() => {
+        // setTimeout(() => {
           router.push("/login"); // Redirect to the login page after 2 seconds
-        }, 2000);
+        // }, 2000);
       } else {
         toast.error(data.message || "Signup failed"); // Show error toast
       }

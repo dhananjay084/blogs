@@ -19,9 +19,9 @@ export default function Login() {
       const success = await login(email, password); 
       if (success) {
         toast.success("Login successful!"); 
-        setTimeout(() => {
+        // setTimeout(() => {
           router.push("/blogs"); 
-        }, 2000); 
+        // }, 2000); 
       }
     } catch (error) {
       toast.error(error.message || "Login failed"); 
